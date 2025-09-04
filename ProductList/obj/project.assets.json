@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\ProductList\\ProductList.csproj",
+      "projectUniqueName": "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\ProductList\\ProductList.csproj",
       "projectName": "ProductList",
-      "projectPath": "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\ProductList\\ProductList.csproj",
+      "projectPath": "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\ProductList\\ProductList.csproj",
       "packagesPath": "C:\\Users\\Sam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\ProductList\\obj\\",
+      "outputPath": "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\ProductList\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
