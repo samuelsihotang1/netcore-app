@@ -54,7 +54,7 @@ builder.Services
     .AddSignInManager<SignInManager<AppUser>>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
-var key = Environment.GetEnvironmentVariable("JWT__KEY") ?? throw new InvalidOperationException("Jwt:Key missing");
+var key = Environment.GetEnvironmentVariable("JWT__KEY");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
