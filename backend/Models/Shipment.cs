@@ -11,7 +11,7 @@ namespace backend.Models
         [MaxLength(60)]
         public string? Courier { get; set; }
 
-        // in_transit | delivered | failed
+        // in_transit | delivered
         [Required, MaxLength(30)]
         public string Status { get; set; } = "in_transit";
 

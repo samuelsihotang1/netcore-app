@@ -1,31 +1,30 @@
 using backend.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data
 {
-    public class AppDbContext : DbContext
-    {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<long>, long>
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<User> Users => Set<User>();
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<Shipment> Shipments => Set<Shipment>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Users
-            modelBuilder.Entity<User>(e =>
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AppUser>(e =>
             {
-                e.HasIndex(x => x.Email).IsUnique();
                 e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
 
-            // Products
             modelBuilder.Entity<Product>(e =>
             {
                 e.HasIndex(x => x.Sku).IsUnique();
-
                 e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
                 e.Property(x => x.Price).HasPrecision(14, 2);
                 e.Property(x => x.Stock).HasDefaultValue(0);
@@ -37,7 +36,6 @@ namespace backend.Data
                 });
             });
 
-            // Orders
             modelBuilder.Entity<Order>(e =>
             {
                 e.HasOne(x => x.User)
@@ -51,22 +49,10 @@ namespace backend.Data
                     .OnDelete(DeleteBehavior.Restrict);
 
                 e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-
                 e.Property(x => x.UnitPrice).HasPrecision(14, 2);
+                e.Property(x => x.Subtotal).HasPrecision(14, 2);
                 e.Property(x => x.ShippingCost).HasPrecision(14, 2);
-
-                // Computed columns (SQL Server)
-                e.Property(x => x.Subtotal)
-                    .HasPrecision(14, 2)
-                    .HasComputedColumnSql(
-                        "CONVERT(decimal(14,2), [Qty] * [UnitPrice])",
-                        stored: true);
-
-                e.Property(x => x.GrandTotal)
-                    .HasPrecision(14, 2)
-                    .HasComputedColumnSql(
-                        "CONVERT(decimal(14,2), ([Qty] * [UnitPrice]) + [ShippingCost])",
-                        stored: true);
+                e.Property(x => x.GrandTotal).HasPrecision(14, 2);
 
                 e.ToTable(tb =>
                 {
@@ -74,12 +60,12 @@ namespace backend.Data
                         "[Status] IN ('draft','paid','completed','cancelled')");
                     tb.HasCheckConstraint("CK_Order_Qty_Positive", "[Qty] > 0");
                     tb.HasCheckConstraint("CK_Order_UnitPrice_NonNegative", "[UnitPrice] >= 0");
+                    tb.HasCheckConstraint("CK_Order_Subtotal_NonNegative", "[Subtotal] >= 0");
                     tb.HasCheckConstraint("CK_Order_ShippingCost_NonNegative", "[ShippingCost] >= 0");
-                    // Subtotal & GrandTotal count on DB, with precision
+                    tb.HasCheckConstraint("CK_Order_GrandTotal_NonNegative", "[GrandTotal] >= 0");
                 });
             });
 
-            // Shipments
             modelBuilder.Entity<Shipment>(e =>
             {
                 e.HasOne(x => x.Order)
