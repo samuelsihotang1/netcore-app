@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -25,8 +23,5 @@ namespace backend.Models
         public bool IsActive { get; set; } = true;
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-
-        // Navigation
-        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

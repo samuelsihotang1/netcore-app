@@ -36,8 +36,16 @@ namespace backend.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<decimal>("GrandTotal")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasPrecision(14, 2)
-                        .HasColumnType("decimal(14,2)");
+                        .HasColumnType("decimal(14,2)")
+                        .HasComputedColumnSql("CONVERT(decimal(14,2), ([Qty] * [UnitPrice]) + [ShippingCost])", true);
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("ShippingCost")
                         .HasPrecision(14, 2)
@@ -49,6 +57,12 @@ namespace backend.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<decimal>("Subtotal")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasPrecision(14, 2)
+                        .HasColumnType("decimal(14,2)")
+                        .HasComputedColumnSql("CONVERT(decimal(14,2), [Qty] * [UnitPrice])", true);
+
+                    b.Property<decimal>("UnitPrice")
                         .HasPrecision(14, 2)
                         .HasColumnType("decimal(14,2)");
 
@@ -57,58 +71,19 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders", t =>
                         {
-                            t.HasCheckConstraint("CK_Order_GrandTotal_NonNegative", "[GrandTotal] >= 0");
+                            t.HasCheckConstraint("CK_Order_Qty_Positive", "[Qty] > 0");
 
                             t.HasCheckConstraint("CK_Order_ShippingCost_NonNegative", "[ShippingCost] >= 0");
 
                             t.HasCheckConstraint("CK_Order_Status", "[Status] IN ('draft','paid','completed','cancelled')");
 
-                            t.HasCheckConstraint("CK_Order_Subtotal_NonNegative", "[Subtotal] >= 0");
-                        });
-                });
-
-            modelBuilder.Entity("backend.Models.OrderItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<decimal>("LineTotal")
-                        .HasPrecision(14, 2)
-                        .HasColumnType("decimal(14,2)");
-
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Qty")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(14, 2)
-                        .HasColumnType("decimal(14,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrderItems", t =>
-                        {
-                            t.HasCheckConstraint("CK_OrderItem_LineTotal_NonNegative", "[LineTotal] >= 0");
-
-                            t.HasCheckConstraint("CK_OrderItem_Qty_Positive", "[Qty] > 0");
-
-                            t.HasCheckConstraint("CK_OrderItem_UnitPrice_NonNegative", "[UnitPrice] >= 0");
+                            t.HasCheckConstraint("CK_Order_UnitPrice_NonNegative", "[UnitPrice] >= 0");
                         });
                 });
 
@@ -236,31 +211,20 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Order", b =>
                 {
+                    b.HasOne("backend.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("backend.Models.OrderItem", b =>
-                {
-                    b.HasOne("backend.Models.Order", "Order")
-                        .WithMany("Items")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Product", "Product")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
                     b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("backend.Models.Shipment", b =>
@@ -276,14 +240,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Order", b =>
                 {
-                    b.Navigation("Items");
-
                     b.Navigation("Shipments");
-                });
-
-            modelBuilder.Entity("backend.Models.Product", b =>
-                {
-                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>

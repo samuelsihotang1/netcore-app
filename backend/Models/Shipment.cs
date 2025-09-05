@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models
@@ -12,7 +11,8 @@ namespace backend.Models
         [MaxLength(60)]
         public string? Courier { get; set; }
 
-        [Required, MaxLength(30)] // in_transit|delivered|failed
+        // in_transit | delivered | failed
+        [Required, MaxLength(30)]
         public string Status { get; set; } = "in_transit";
 
         public DateTimeOffset? ShippedAt { get; set; }
