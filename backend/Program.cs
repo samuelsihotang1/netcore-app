@@ -1,6 +1,6 @@
 using DotNetEnv;
 
-Env.Load(); // baca .env ke Environment Variables
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +11,23 @@ var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "SamZ API",
+        Version = "v1",
+        Description = "This is an API in .NET 9, check my website samz.my.id",
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
 }
 
