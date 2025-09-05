@@ -1,0 +1,9 @@
+/backend/.vs
+/backend/obj/Debug
+/backend/bin/Debug
+/backend/obj/Release
+/backend/bin/Release
+/backend/Properties/PublishProfiles
+/.vs
+backend/.env
+backend/backend.csproj.user
