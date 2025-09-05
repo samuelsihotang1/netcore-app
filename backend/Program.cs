@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "SamZ API",
         Version = "v1",
-        Description = "This is an API in .NET 9, check my website samz.my.id",
+        Description = "This is an API in .NET 9, check my website [samz.my.id](https://samz.my.id)",
     });
 });
 
@@ -26,8 +26,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.MapOpenApi();
 }
 
@@ -36,6 +34,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 var summaries = new[]
