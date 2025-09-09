@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\backend\\backend.csproj": {}
+    "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\backend\\backend.csproj": {
+    "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\backend\\backend.csproj",
+        "projectPath": "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\backend\\backend.csproj",
         "packagesPath": "C:\\Users\\Sam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Sam\\Documents\\GitHub\\netcore-app\\backend\\obj\\",
+        "outputPath": "C:\\Users\\Sam\\Documents\\Github\\netcore-app\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
