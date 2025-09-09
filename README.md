@@ -1,4 +1,4 @@
-# Netcore App
+# Transaction w Auth
 
 This project is a **Fullstack Application** with the backend built using **.NET Core (C#)** and the frontend using **React + Vite + TailwindCSS**. The system is designed to manage products, orders, and user authentication, with database integration through **Entity Framework Core**.
 
