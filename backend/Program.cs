@@ -2,42 +2,47 @@ using DotNetEnv;
 using Microsoft.OpenApi.Models;
 using backend.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using backend.Dao;
+using backend.Interface;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.AddOpenApi();
-
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSwaggerGen(options =>
+builder.Services.AddSwaggerGen(option =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "SamZ API", Version = "v1", Description = "This is an API in .NET 9, check my website [samz.my.id](https://samz.my.id)" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Title = "SamZ API",
-        Version = "v1",
-        Description = "This is an API in .NET 9, check my website [samz.my.id](https://samz.my.id)",
-    });
-    var scheme = new OpenApiSecurityScheme
-    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Masukkan: Bearer {token}"
-    };
-    options.AddSecurityDefinition("Bearer", scheme);
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement { { scheme, Array.Empty<string>() } });
-
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
 });
 
 builder.Services
@@ -53,8 +58,7 @@ builder.Services
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager<SignInManager<AppUser>>();
 
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var key = Environment.GetEnvironmentVariable("JWT__KEY");
+var signingKey = Environment.GetEnvironmentVariable("JWT__KEY");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -63,17 +67,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(signingKey)
+            ),
             ValidateIssuer = true,
-            ValidIssuer = jwtSection["Issuer"],
+            ValidIssuer = builder.Configuration["JWT:Issuer"],
             ValidateAudience = true,
-            ValidAudience = jwtSection["Audience"],
+            ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IShopDao, ShopDao>();
+builder.Services.AddScoped<IDatabaseAdminDao, DatabaseAdminDao>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -90,8 +98,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+});
 app.UseSwagger();
-app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
