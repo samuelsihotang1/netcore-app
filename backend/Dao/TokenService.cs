@@ -3,8 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using backend.Models;
 using Microsoft.IdentityModel.Tokens;
+using backend.Interface;
 
-namespace backend.Services
+namespace backend.Dao
 {
     public class TokenService : ITokenService
     {
