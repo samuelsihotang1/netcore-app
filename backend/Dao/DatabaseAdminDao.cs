@@ -3,18 +3,19 @@ using System.Text;
 using backend.Data;
 using backend.Dto;
 using backend.Interface;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace backend.Dao
 {
     public class DatabaseAdminDao : IDatabaseAdminDao
     {
-        private readonly AppDbContext _db;
         private readonly IServiceProvider _sp;
         private readonly IConfiguration _config;
 
-        public DatabaseAdminDao(AppDbContext db, IServiceProvider sp, IConfiguration config)
+        public DatabaseAdminDao(IServiceProvider sp, IConfiguration config)
         {
-            _db = db;
             _sp = sp;
             _config = config;
         }
@@ -24,8 +25,12 @@ namespace backend.Dao
             if (!IsPasswordValid(input?.Password))
                 throw new UnauthorizedAccessException("Invalid reset password.");
 
-            await SqlServerDbCleaner.DropAllTablesAsync(_db);
-            await DbSeeder.InitializeAsync(_sp);
+            using var scope = _sp.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            await SqlServerDbCleaner.DropAllTablesAsync(db);
+            await db.Database.MigrateAsync(ct);
+            await DbSeeder.InitializeAsync(scope.ServiceProvider);
 
             return new DatabaseResetResultDto { Message = "All tables dropped, migrated, and seeded." };
         }
@@ -34,7 +39,9 @@ namespace backend.Dao
         {
             var expected = _config["DB_RESET_PASSWORD"]
                            ?? Environment.GetEnvironmentVariable("DB_RESET_PASSWORD");
-            if (string.IsNullOrWhiteSpace(expected) || string.IsNullOrWhiteSpace(supplied)) return false;
+
+            if (string.IsNullOrWhiteSpace(expected) || string.IsNullOrWhiteSpace(supplied))
+                return false;
 
             var a = Encoding.UTF8.GetBytes(expected);
             var b = Encoding.UTF8.GetBytes(supplied);

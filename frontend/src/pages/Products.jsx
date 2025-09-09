@@ -14,7 +14,9 @@ export default function Products() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${VITE_API_BASE}/products`, { cache: "no-store" });
+        const res = await fetch(`${VITE_API_BASE}/products`, {
+          cache: "no-store",
+        });
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         console.log(`${VITE_API_BASE}/products`);
         setProducts(await res.json());
@@ -25,23 +27,30 @@ export default function Products() {
       }
     })();
   }, []);
-
   const buy = async (p) => {
     try {
       const qty = qtyById[p.id] ?? 1;
       const token = getToken();
-      const res = await fetch(`${VITE_API_BASE}/orders/buy`, {
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const res = await fetch(`${VITE_API_BASE}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ productId: p.id, qty }),
       });
+
       if (res.status === 401) {
         navigate("/login");
         return;
       }
+
       if (!res.ok) {
         let msg = res.statusText;
         try {
@@ -50,6 +59,7 @@ export default function Products() {
         } catch {}
         throw new Error(msg);
       }
+
       navigate("/orders");
     } catch (e) {
       alert(`Gagal beli: ${e.message}`);

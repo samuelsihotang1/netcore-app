@@ -32,8 +32,8 @@ namespace backend.Dao
         {
             if (dto.Qty <= 0) throw new ArgumentException("Qty must be > 0");
             var product = await _db.Products.FirstOrDefaultAsync(p => p.Id == dto.ProductId && p.IsActive);
-            if (product == null) throw new InvalidOperationException("Product not found/active");
-            if (product.Stock < dto.Qty) throw new InvalidOperationException("Insufficient stock");
+            if (product == null) throw new ArgumentException("Product not found/active");
+            if (product.Stock < dto.Qty) throw new ArgumentException("Insufficient stock");
 
             var unitPrice = product.Price;
             var subtotal = unitPrice * dto.Qty;
@@ -45,7 +45,7 @@ namespace backend.Dao
             {
                 UserId = userId,
                 ProductId = product.Id,
-                Status = "paid",
+                Status = "waiting_payment",
                 Qty = dto.Qty,
                 UnitPrice = unitPrice,
                 Subtotal = subtotal,
@@ -55,14 +55,14 @@ namespace backend.Dao
             _db.Orders.Add(order);
 
             product.Stock -= dto.Qty;
-            if (product.Stock < 0) throw new InvalidOperationException("Concurrent stock error");
+            if (product.Stock < 0) throw new ArgumentException("Concurrent stock error");
 
             await _db.SaveChangesAsync();
 
             var shipment = new Shipment
             {
                 OrderId = order.Id,
-                Status = "in_transit",
+                Status = "packaging",
                 Courier = dto.Courier,
                 ShippedAt = DateTimeOffset.UtcNow
             };
@@ -110,7 +110,7 @@ namespace backend.Dao
 
         public async Task<bool> UpdateOrderStatusAsync(long userId, long orderId, string status)
         {
-            var allowed = new[] { "draft", "paid", "completed", "cancelled" };
+            var allowed = new[] { "waiting_payment", "paid", "completed", "cancelled" };
             if (!allowed.Contains(status)) throw new ArgumentException("Invalid order status");
 
             var order = await _db.Orders.Include(o => o.Shipments)
@@ -120,13 +120,13 @@ namespace backend.Dao
             if (status == "paid" && !order.Shipments.Any())
             {
                 var product = await _db.Products.FirstAsync(p => p.Id == order.ProductId);
-                if (product.Stock < order.Qty) throw new InvalidOperationException("Insufficient stock");
+                if (product.Stock < order.Qty) throw new ArgumentException("Insufficient stock");
                 product.Stock -= order.Qty;
 
                 var shipment = new Shipment
                 {
                     OrderId = order.Id,
-                    Status = "in_transit",
+                    Status = "packaging",
                     ShippedAt = DateTimeOffset.UtcNow
                 };
                 _db.Shipments.Add(shipment);
@@ -173,7 +173,7 @@ namespace backend.Dao
 
         public async Task<bool> UpdateShipmentStatusAsync(long userId, long orderId, string status)
         {
-            var allowed = new[] { "in_transit", "delivered", "failed" };
+            var allowed = new[] { "packaging", "in_transit", "delivered", "failed" };
             if (!allowed.Contains(status)) throw new ArgumentException("Invalid shipment status");
 
             var order = await _db.Orders

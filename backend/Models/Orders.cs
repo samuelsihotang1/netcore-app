@@ -14,9 +14,9 @@ namespace backend.Models
         public long ProductId { get; set; }
         public Product Product { get; set; } = null!;
 
-        // draft | paid | completed | cancelled
+        // waiting_payment | paid | completed | cancelled
         [Required, MaxLength(30)]
-        public string Status { get; set; } = "draft";
+        public string Status { get; set; } = "waiting_payment";
 
         public int Qty { get; set; } = 1;
 

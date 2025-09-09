@@ -39,11 +39,11 @@ namespace backend.Data
             var pLow      = await EnsureProductAsync(db, "SKU-005", "Very Low Stock",     50000m,  stock: 1,  weight: 50,  isActive: true);  // stok kecil (uji gagal beli)
 
             // ===== Orders untuk u1 (menguji semua kondisi) =====
-            // O1: DRAFT (tanpa shipment) — bisa diubah ke PAID untuk uji auto-buat shipment
-            await EnsureOrderAsync(db, u1.Id, pKeyboard, status: "draft", qty: 1, shipping: 15000m, makeShipment: false);
+            // O1: waiting_payment (tanpa shipment) — bisa diubah ke PAID untuk uji auto-buat shipment
+            await EnsureOrderAsync(db, u1.Id, pKeyboard, status: "waiting_payment", qty: 1, shipping: 15000m, makeShipment: false);
 
-            // O2: PAID + shipment IN_TRANSIT — uji halaman 4/5, dan perubahan delivery
-            await EnsureOrderAsync(db, u1.Id, pMouse, status: "paid", qty: 2, shipping: 12000m, makeShipment: true, shipmentStatus: "in_transit");
+            // O2: PAID + shipment packaging — uji halaman 4/5, dan perubahan delivery
+            await EnsureOrderAsync(db, u1.Id, pMouse, status: "paid", qty: 2, shipping: 12000m, makeShipment: true, shipmentStatus: "packaging");
 
             // O3: CANCELLED (tanpa shipment) — uji aturan "jika cancelled, tidak usah buat delivery"
             await EnsureOrderAsync(db, u1.Id, pHeadset, status: "cancelled", qty: 1, shipping: 18000m, makeShipment: false);
@@ -54,12 +54,12 @@ namespace backend.Data
             // O5: PAID + shipment FAILED — uji skenario gagal kirim
             await EnsureOrderAsync(db, u1.Id, pHeadset, status: "paid", qty: 1, shipping: 15000m, makeShipment: true, shipmentStatus: "failed");
 
-            // O6: DRAFT untuk produk stok kecil — uji nanti saat di-PAID akan gagal jika qty > stok
-            await EnsureOrderAsync(db, u1.Id, pLow, status: "draft", qty: 2, shipping: 8000m, makeShipment: false); // stok 1, qty 2 → insufisien bila di-PAID
+            // O6: waiting_payment untuk produk stok kecil — uji nanti saat di-PAID akan gagal jika qty > stok
+            await EnsureOrderAsync(db, u1.Id, pLow, status: "waiting_payment", qty: 2, shipping: 8000m, makeShipment: false);
 
             // ===== Orders untuk u2 (variasi tambahan) =====
             await EnsureOrderAsync(db, u2.Id, pMouse, status: "paid", qty: 1, shipping: 9000m, makeShipment: true, shipmentStatus: "in_transit");
-            await EnsureOrderAsync(db, u2.Id, pKeyboard, status: "draft", qty: 3, shipping: 15000m, makeShipment: false);
+            await EnsureOrderAsync(db, u2.Id, pKeyboard, status: "waiting_payment", qty: 3, shipping: 15000m, makeShipment: false);
 
             await db.SaveChangesAsync();
         }
@@ -115,9 +115,8 @@ namespace backend.Data
         }
 
         /// <summary>
-        /// Membuat order sesuai status & shipment.
         /// - Jika status "paid" / "completed" dan makeShipment=true → kurangi stok produk.
-        /// - Shipment status: in_transit | delivered | failed.
+        /// - Shipment status: packaging | in_transit | delivered | failed.
         /// - Jika delivered → set order.Status = completed (konsisten dgn aturan API).
         /// </summary>
         private static async Task EnsureOrderAsync(

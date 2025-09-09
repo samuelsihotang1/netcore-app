@@ -11,9 +11,9 @@ namespace backend.Models
         [MaxLength(60)]
         public string? Courier { get; set; }
 
-        // in_transit | delivered
+        // packaging | in_transit
         [Required, MaxLength(30)]
-        public string Status { get; set; } = "in_transit";
+        public string Status { get; set; } = "packaging";
 
         public DateTimeOffset? ShippedAt { get; set; }
         public DateTimeOffset? DeliveredAt { get; set; }

@@ -57,7 +57,7 @@ namespace backend.Data
                 e.ToTable(tb =>
                 {
                     tb.HasCheckConstraint("CK_Order_Status",
-                        "[Status] IN ('draft','paid','completed','cancelled')");
+                        "[Status] IN ('waiting_payment','paid','completed','cancelled')");
                     tb.HasCheckConstraint("CK_Order_Qty_Positive", "[Qty] > 0");
                     tb.HasCheckConstraint("CK_Order_UnitPrice_NonNegative", "[UnitPrice] >= 0");
                     tb.HasCheckConstraint("CK_Order_Subtotal_NonNegative", "[Subtotal] >= 0");
@@ -76,7 +76,7 @@ namespace backend.Data
                 e.ToTable(tb =>
                 {
                     tb.HasCheckConstraint("CK_Shipment_Status",
-                        "[Status] IN ('in_transit','delivered','failed')");
+                        "[Status] IN ('packaging', 'in_transit','delivered','failed')");
                 });
             });
         }

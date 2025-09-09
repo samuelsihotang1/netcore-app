@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250908185122_InitialCreate")]
+    [Migration("20250909173726_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -293,7 +293,7 @@ namespace backend.Migrations
 
                             t.HasCheckConstraint("CK_Order_ShippingCost_NonNegative", "[ShippingCost] >= 0");
 
-                            t.HasCheckConstraint("CK_Order_Status", "[Status] IN ('draft','paid','completed','cancelled')");
+                            t.HasCheckConstraint("CK_Order_Status", "[Status] IN ('waiting_payment','paid','completed','cancelled')");
 
                             t.HasCheckConstraint("CK_Order_Subtotal_NonNegative", "[Subtotal] >= 0");
 
@@ -384,7 +384,7 @@ namespace backend.Migrations
 
                     b.ToTable("Shipments", t =>
                         {
-                            t.HasCheckConstraint("CK_Shipment_Status", "[Status] IN ('in_transit','delivered','failed')");
+                            t.HasCheckConstraint("CK_Shipment_Status", "[Status] IN ('packaging', 'in_transit','delivered','failed')");
                         });
                 });
 

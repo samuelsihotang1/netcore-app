@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const getTok = () => localStorage.getItem("access_token") || "";
-const ORDER_STATUS_OPTIONS = ["paid", "processing", "completed", "cancelled"];
+const ORDER_STATUS_OPTIONS = ["waiting_payment", "paid", "completed", "cancelled"];
 
 export default function Orders() {
   const [rows, setRows] = useState([]);
@@ -68,7 +68,7 @@ export default function Orders() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Order Saya</h1>
         <Link
-          to="/products"
+          to="/"
           className="px-3 py-1 rounded border hover:bg-gray-50"
         >
           ← Kembali

@@ -18,7 +18,7 @@ namespace backend.Dto
 
     public class OrderStatusUpdateDto
     {
-        // draft|paid|completed|cancelled
+        // waiting_payment|paid|completed|cancelled
         public string Status { get; set; } = null!;
     }
 

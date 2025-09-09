@@ -20,7 +20,7 @@ JOIN sys.schemas s ON t.schema_id = s.schema_id;
 
 IF @sql IS NOT NULL EXEC sp_executesql @sql;
 
--- 2) Drop semua table (termasuk __EFMigrationsHistory)
+-- 2) Drop semua table
 SELECT @sql = STRING_AGG(
     'DROP TABLE ' + QUOTENAME(s.name) + '.' + QUOTENAME(t.name) + ';', CHAR(10))
 FROM sys.tables t

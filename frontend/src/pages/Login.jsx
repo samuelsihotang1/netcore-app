@@ -28,7 +28,7 @@ export default function Login() {
       }
       const data = await res.json();
       localStorage.setItem("access_token", data.accessToken);
-      navigate("/products");
+      navigate("/");
     } catch (e) {
       alert(`Login gagal: ${e.message}`);
     } finally {

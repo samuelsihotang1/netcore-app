@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const getTok = () => localStorage.getItem("access_token") || "";
-const SHIPMENT_STATUS_OPTIONS = ["in_transit", "delivered", "failed"];
+const SHIPMENT_STATUS_OPTIONS = ["packaging", "in_transit", "delivered", "failed"];
 
 export default function OrderDetail() {
   const { id } = useParams();

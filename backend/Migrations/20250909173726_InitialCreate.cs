@@ -203,7 +203,7 @@ namespace backend.Migrations
                     table.CheckConstraint("CK_Order_GrandTotal_NonNegative", "[GrandTotal] >= 0");
                     table.CheckConstraint("CK_Order_Qty_Positive", "[Qty] > 0");
                     table.CheckConstraint("CK_Order_ShippingCost_NonNegative", "[ShippingCost] >= 0");
-                    table.CheckConstraint("CK_Order_Status", "[Status] IN ('draft','paid','completed','cancelled')");
+                    table.CheckConstraint("CK_Order_Status", "[Status] IN ('waiting_payment','paid','completed','cancelled')");
                     table.CheckConstraint("CK_Order_Subtotal_NonNegative", "[Subtotal] >= 0");
                     table.CheckConstraint("CK_Order_UnitPrice_NonNegative", "[UnitPrice] >= 0");
                     table.ForeignKey(
@@ -235,7 +235,7 @@ namespace backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shipments", x => x.Id);
-                    table.CheckConstraint("CK_Shipment_Status", "[Status] IN ('in_transit','delivered','failed')");
+                    table.CheckConstraint("CK_Shipment_Status", "[Status] IN ('packaging', 'in_transit','delivered','failed')");
                     table.ForeignKey(
                         name: "FK_Shipments_Orders_OrderId",
                         column: x => x.OrderId,

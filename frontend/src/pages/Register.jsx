@@ -27,7 +27,9 @@ export default function Register() {
         } catch {}
         throw new Error(msg);
       }
-      navigate("/login");
+      const data = await res.json();
+      localStorage.setItem("access_token", data.accessToken);
+      navigate("/");
     } catch (e) {
       alert(`Register gagal: ${e.message}`);
     } finally {

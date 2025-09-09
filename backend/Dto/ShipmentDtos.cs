@@ -15,7 +15,7 @@ namespace backend.Dto
         public DateTimeOffset? DeliveredAt { get; set; }
     }
 
-    // Update status delivery: in_transit|delivered|failed
+    // Update status delivery: packaging|in_transit|failed
     public class ShipmentStatusUpdateDto
     {
         public string Status { get; set; } = null!;
