@@ -119,14 +119,7 @@ export default function Products() {
       </div>
 
       <div className="text-sm text-gray-600">
-        Belum login?{" "}
-        <Link className="underline" to="/login">
-          Login
-        </Link>{" "}
-        atau{" "}
-        <Link className="underline" to="/register">
-          Register
-        </Link>
+          Built with ❤️ by <a href="https://samz.my.id">SamZ</a>
       </div>
     </div>
   );

@@ -8,3 +8,5 @@
 backend/.env
 backend/backend.csproj.user
 frontend/.env
+
+.vercel
