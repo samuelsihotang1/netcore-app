@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="85px" height="85px" viewBox="0 0 940.99 662.52" xml:space="preserve" class="gradient-fill">
+              <style type="text/css">
+                .gradient-fill {
+                  fill: url(#gradientFill);
+                }
+              </style>
+              <g>
+                <linearGradient id="gradientFill" gradientUnits="userSpaceOnUse" x1="0" y1="662.52" x2="940.99" y2="0">
+                  <stop offset="0" style="stop-color:#0c2f7e"></stop>
+                  <stop offset="1" style="stop-color:#5984e2"></stop>
+                </linearGradient>
+                <path class="gradient-fill" d="m0,395.36h181.29c63.38,0,123.3-28.9,162.76-78.49,0,0,252.12-316.87,252.12-316.87h-219.26c-39.39,0-76.63,17.96-101.16,48.78C275.76,48.78,0,395.36,0,395.36Z"></path>
+                <path class="gradient-fill" d="m571.51,267.16l-81.75,102.74c-9.15,11.51-21.7,19.58-35.63,23.24-5.54,1.45-11.3,2.21-17.14,2.21h-67.38l81.74-102.74c9.18-11.53,21.75-19.61,35.71-23.26.04-.02.08-.03.11-.03,5.48-1.42,11.17-2.16,16.95-2.16h67.39Z"></path>
+                <path class="gradient-fill" d="m940.99,267.16h-181.29c-63.38,0-123.3,28.9-162.76,78.49,0,0-252.12,316.87-252.12,316.87h219.26c39.39,0,76.63-17.96,101.16-48.78,0,0,275.76-346.57,275.76-346.57Z"></path>
+              </g>
+            </svg>
